@@ -21,6 +21,6 @@ c = my_package.add(a, b)
 assert np.allclose(c, a+b)
 
 # 性能测试
-t0 = timeit("my_package.add(a, b)", globals=globals(), number=50)
-t1 = timeit("a + b", globals=globals(), number=50)
+t0 = timeit("my_package.add(a, b)", globals=globals(), number=100)
+t1 = timeit("a + b", globals=globals(), number=100)
 print(t0, t1)

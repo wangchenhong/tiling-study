@@ -12,7 +12,7 @@ py::array_t<double> kernel0(py::array_t<double> a, py::array_t<double> b) {
     auto b_ptr = b.mutable_data();
     auto c_ptr = c.mutable_data();
 
-    #pragma omp parallel for num_threads(16)
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < M; i++) {
         double sum = 0;
         for (int j = 0; j < N; j++) {
@@ -32,7 +32,7 @@ py::array_t<double> kernel(py::array_t<double> a, py::array_t<double> b) {
     auto b_ptr = b.data();
     auto c_ptr = c.mutable_data();
 
-    #pragma omp parallel for num_threads(16)
+    #pragma omp parallel for num_threads(64)
     for (int i = 0; i < M; i+=4) {
         double c0 = 0;
         double c1 = 0;

@@ -1,7 +1,7 @@
 import os
 import importlib
 import numpy as np
-from timeit import timeit
+from timeit import timeit, repeat
 
 # 编译pybind11模块并动态导入
 name = 'vec_add'
@@ -21,6 +21,7 @@ c = my_package.add(a, b)
 assert np.allclose(c, a+b)
 
 # 性能测试
-t0 = timeit("my_package.add(a, b)", globals=globals(), number=100)
-t1 = timeit("a + b", globals=globals(), number=100)
+t0 = repeat("my_package.add(a, b)", globals=globals(), number=10, repeat=50)
+t1 = repeat("a + b", globals=globals(), number=10, repeat=50)
 print(t0, t1)
+print(np.mean(t0[20:]), np.mean(t1[20:]))

@@ -17,7 +17,7 @@ def mybench(stmts, globals, n_warmup=10, n_iters=100):
     times = repeat(stmts, globals=globals, number=10, repeat=n_iters)
     return np.mean(times[n_warmup:]) / 10
 
-# 这样并行地生成比直接np.random.randn(M, N)更快
+# 使用numba并行地生成比直接np.random.randn(M, N)更快
 @numba.njit(parallel=True)
 def gen_matrix(M, N, dtype=np.float64):
     out = np.empty((M, N), dtype=dtype)

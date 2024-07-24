@@ -21,7 +21,7 @@ c = my_package.add(a, b)
 assert np.allclose(c, a+b)
 
 # 性能测试
-t0 = repeat("my_package.add(a, b)", globals=globals(), number=10, repeat=50)
-t1 = repeat("a + b", globals=globals(), number=10, repeat=50)
-print(t0, t1)
-print(np.mean(t0[20:]) / 10, np.mean(t1[20:]) / 10)
+t0 = repeat("my_package.add(a, b)", globals=globals(), number=10, repeat=100)
+t1 = repeat("a + b", globals=globals(), number=10, repeat=100)
+#print(t0, t1)
+print(np.mean(t0[10:]) / 10, np.mean(t1[10:]) / 10)

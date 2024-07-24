@@ -22,16 +22,9 @@ def bench(fn):
     )
     return t0.blocked_autorange(min_run_time=1).mean
 
-def mybench(fn, clear_cache=True, n_warmup=10, n_iters=100):
-    times = []
-    for i in range(n_iters+n_warmup):
-        if clear_cache:
-            _ = np.zeros(256*1024*1024//8, dtype=np.float64)
-        t0 = time.perf_counter()
-        fn()
-        elapsed = time.perf_counter() - t0
-        times.append(elapsed)
-    return np.mean(times[n_warmup:])
+def mybench(stmts, globals, n_warmup=10, n_iters=100):
+    times = repeat(stmts, globals=globals, number=10, repeat=n_iters)
+    return np.mean(times[n_warmup:]) / 10
 
 @numba.njit(parallel=True)
 def gen_matrix(M, N, dtype=np.float64):
@@ -54,13 +47,13 @@ for N in [1024*1024//2, 1024*1024, 1024*1024*2, 1024*1024*4, 1024*1024*8]:
     assert np.allclose(c, a@b)
 
     # 性能测试
-    t0 = repeat("my_package.kernel0(a, b)", globals=globals(), number=10, repeat=50)
-    t1 = repeat("my_package.kernel(a, b)", globals=globals(), number=10, repeat=50)
-    t2 = repeat("a @ b", globals=globals(), number=10, repeat=50)
-    #print(t0, t1)
-    print(np.mean(t0[10:]) / 10, np.mean(t1[10:]) / 10, np.mean(t2[10:]) / 10)
-    print(f'speedup with tiling: {(t0/t1):.4f}\n')
-print()
+    # t0 = repeat("my_package.kernel0(a, b)", globals=globals(), number=10, repeat=50)
+    # t1 = repeat("my_package.kernel(a, b)", globals=globals(), number=10, repeat=50)
+    # t2 = repeat("a @ b", globals=globals(), number=10, repeat=50)
+    # #print(t0, t1)
+    # print(np.mean(t0[10:]) / 10, np.mean(t1[10:]) / 10, np.mean(t2[10:]) / 10)
+    # print(f'speedup with tiling: {(t0/t1):.4f}\n')
+
 
     # t0 = bench(lambda: my_package.kernel0(a, b))
     # t1 = bench(lambda: my_package.kernel(a, b))
@@ -68,13 +61,13 @@ print()
     # print(t0, t1, t2)
     # print(f'speedup with tiling: {(t0/t1):.4f}\n')
 
-    # t0 = mybench(lambda: my_package.kernel0(a, b))
-    # t1 = mybench(lambda: my_package.kernel(a, b))
-    # t2 = mybench(lambda: a @ b)
-    # print(t0, t1, t2)
-    # print(f'speedup with tiling: {(t0/t1):.4f}\n')
-    # print()
-    # # print(f'speedup with tiling: {(t0[0]/t1[0]):.4f}\n')
+    t0 = mybench("my_package.kernel0(a, b)", globals())
+    t1 = mybench("my_package.kernel(a, b)", globals())
+    t2 = mybench("a @ b", globals())
+    print(t0, t1, t2)
+    print(f'speedup with tiling: {(t0/t1):.4f}\n')
+
+print()
 
 
 

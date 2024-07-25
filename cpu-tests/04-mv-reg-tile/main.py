@@ -43,8 +43,3 @@ for N in [1024*1024//2, 1024*1024, 1024*1024*2, 1024*1024*4, 1024*1024*8]:
     t2 = mybench("a @ b", globals())
     print(t0, t1, t2)
     print(f'speedup with tiling: {(t0/t1):.4f}\n')
-
-
-
-
-    

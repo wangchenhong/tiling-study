@@ -2,7 +2,7 @@ import os
 import importlib
 import numpy as np
 import time
-from timeit import timeit
+from timeit import timeit, repeat
 
 # 编译pybind11模块并动态导入
 name = 'mv'
@@ -12,16 +12,10 @@ if ret != 0:
     print('compiling cpp file failed')
 my_package = importlib.import_module(name)
 
-def mybench(fn, clear_cache=True, n_warmup=10, n_iters=30):
-    times = []
-    for i in range(n_iters+n_warmup):
-        if clear_cache:
-            _ = np.zeros(256*1024*1024//8, dtype=np.float64)
-        t0 = time.perf_counter()
-        fn()
-        elapsed = time.perf_counter() - t0
-        times.append(elapsed)
-    return np.mean(times[n_warmup:])
+# 使用timeit.repeat进行性能测试的函数
+def mybench(stmts, globals, n_warmup=10, n_iters=100):
+    times = repeat(stmts, globals=globals, number=10, repeat=n_iters)
+    return np.mean(times[n_warmup:]) / 10
 
 # 生成输入数组a和b
 M = 1024
@@ -34,11 +28,7 @@ c = my_package.kernel(a, b)
 assert np.allclose(c, a@b)
 
 # 性能测试
-t0 = mybench(lambda: my_package.kernel(a, b))
-t1 = mybench(lambda: a @ b)
+t0 = mybench("my_package.kernel(a, b)", globals())
+t1 = mybench("a @ b", globals())
 print(t0, t1)
 print(f'speedup over numpy: {(t1/t0):.4f}\n')
-
-t0 = timeit("my_package.kernel(a, b)", globals=globals(), number=40)
-t1 = timeit("a @ b", globals=globals(), number=40)
-print(t0/40, t1/40)

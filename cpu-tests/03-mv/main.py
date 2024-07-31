@@ -6,7 +6,7 @@ from timeit import timeit, repeat
 
 # 编译pybind11模块并动态导入
 name = 'mv'
-cmd = f'g++ -O3 -Wall -shared -std=c++11 -fPIC -fopenmp $(python3 -m pybind11 --includes) {name}.cpp -o {name}$(python3-config --extension-suffix)'
+cmd = f'g++ -O3 -mavx2 -Wall -shared -std=c++11 -fPIC -fopenmp $(python3 -m pybind11 --includes) {name}.cpp -o {name}$(python3-config --extension-suffix)'
 ret = os.system(cmd)
 if ret != 0:
     print('compiling cpp file failed')

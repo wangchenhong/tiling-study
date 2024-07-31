@@ -31,7 +31,7 @@ for N in [1024*1024//2, 1024*1024, 1024*1024*2, 1024*1024*4, 1024*1024*8]:
     a = gen_matrix(M, N)
     #a = np.random.randn(M, N)
     b = np.random.randn(N)
-    print('done generating inputs')
+    print(f'input matrix shape: {M} x {N}')
 
     # 调用add函数并使用allclose确认结果正确
     c = my_package.kernel(a, b)
@@ -42,4 +42,5 @@ for N in [1024*1024//2, 1024*1024, 1024*1024*2, 1024*1024*4, 1024*1024*8]:
     t1 = mybench("my_package.kernel(a, b)", globals())
     t2 = mybench("a @ b", globals())
     print(t0, t1, t2)
-    print(f'speedup with tiling: {(t0/t1):.4f}\n')
+    print(f'tiled speedup over untiled: {(t0/t1):.4f}')
+    print(f'tiled speedup over numpy: {(t2/t1):.4f}\n')
